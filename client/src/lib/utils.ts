@@ -1,7 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import * as z from "zod";
-import { api } from "../state/api";
 import { toast } from "sonner";
 
 export function cn(...inputs: ClassValue[]) {
@@ -315,7 +314,7 @@ export const createCourseFormData = (
 export const uploadAllVideos = async (
   localSections: Section[],
   courseId: string,
-  getUploadVideoUrl: any
+  getUploadVideoUrl: GetUploadVideoUrlTrigger
 ) => {
   const updatedSections = localSections.map((section) => ({
     ...section,
@@ -353,7 +352,7 @@ async function uploadVideo(
   chapter: Chapter,
   courseId: string,
   sectionId: string,
-  getUploadVideoUrl: any
+  getUploadVideoUrl: GetUploadVideoUrlTrigger
 ) {
   const file = chapter.video as File;
 
@@ -386,3 +385,11 @@ async function uploadVideo(
     throw error;
   }
 }
+
+type GetUploadVideoUrlTrigger = (args: {
+  courseId: string;
+  sectionId: string;
+  chapterId: string;
+  fileName: string;
+  fileType: string;
+}) => { unwrap: () => Promise<{ uploadUrl: string; videoUrl: string }> };
