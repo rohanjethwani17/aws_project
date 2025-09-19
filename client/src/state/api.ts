@@ -1,73 +1,86 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BaseQueryApi, FetchArgs } from "@reduxjs/toolkit/query";
-import { User } from "@clerk/nextjs/server";
-import { Clerk } from "@clerk/clerk-js";
+import { createApi, fetchBaseQuery, FetchArgs, BaseQueryFn, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+import type { User } from "@clerk/nextjs/server";
 import { toast } from "sonner";
 
-const customBaseQuery = async (
-  args: string | FetchArgs,
-  api: BaseQueryApi,
-  extraOptions: any
-) => {
-  const baseQuery = fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-    prepareHeaders: async (headers) => {
-      const token = await window.Clerk?.session?.getToken();
+// Custom progress/error response types
+interface ErrorResponse {
+  message?: string;
+}
+
+interface SuccessResponse<T> {
+  message?: string;
+  data?: T;
+}
+
+// Type for our base query function
+type CustomBaseQuery = BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+>;
+
+// ✅ Setup base URL with fallback
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  (typeof window !== "undefined"
+    ? `${window.location.protocol}//${window.location.hostname}:8001`
+    : "http://localhost:8001");
+
+const rawBaseQuery = fetchBaseQuery({
+  baseUrl: API_BASE_URL,
+  prepareHeaders: async (headers) => {
+    if (typeof window !== "undefined" && (window as any).Clerk) {
+      const token = await (window as any).Clerk.session?.getToken();
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
-      return headers;
-    },
-  });
-
-  try {
-    const result: any = await baseQuery(args, api, extraOptions);
-
-    if (result.error) {
-      const errorData = result.error.data;
-      const errorMessage =
-        errorData?.message ||
-        result.error.status.toString() ||
-        "An error occurred";
-      toast.error(`Error: ${errorMessage}`);
     }
+    return headers;
+  },
+});
 
-    const isMutationRequest =
-      (args as FetchArgs).method && (args as FetchArgs).method !== "GET";
+// ✅ Custom base query with error/success handling
+const customBaseQuery: CustomBaseQuery = async (args, api, extraOptions) => {
+  const result = await rawBaseQuery(args, api, extraOptions);
 
-    if (isMutationRequest) {
-      const successMessage = result.data?.message;
-      if (successMessage) toast.success(successMessage);
-    }
-
-    if (result.data) {
-      result.data = result.data.data;
-    } else if (
-      result.error?.status === 204 ||
-      result.meta?.response?.status === 24
-    ) {
-      return { data: null };
-    }
-
-    return result;
-  } catch (error: unknown) {
+  // Handle errors
+  if ("error" in result && result.error) {
+    const errorData = (result.error.data as ErrorResponse) ?? {};
     const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-
-    return { error: { status: "FETCH_ERROR", error: errorMessage } };
+      errorData.message || result.error.status?.toString() || "An error occurred";
+    toast.error(`Error: ${errorMessage}`);
+    return result;
   }
+
+  // Handle mutation success messages
+  if (
+    "data" in result &&
+    (args as FetchArgs).method &&
+    (args as FetchArgs).method !== "GET"
+  ) {
+    const successData = result.data as SuccessResponse<unknown>;
+    if (successData?.message) {
+      toast.success(successData.message);
+    }
+  }
+
+  // Normalize data wrapper
+  if ("data" in result && result.data && (result.data as SuccessResponse<unknown>).data) {
+    return { ...result, data: (result.data as SuccessResponse<unknown>).data };
+  }
+
+  return result;
 };
 
+// ==============
+// API Definition
+// ==============
 export const api = createApi({
   baseQuery: customBaseQuery,
   reducerPath: "api",
   tagTypes: ["Courses", "Users", "UserCourseProgress"],
   endpoints: (build) => ({
-    /* 
-    ===============
-    USER CLERK
-    =============== 
-    */
+    // USER CLERK
     updateUser: build.mutation<User, Partial<User> & { userId: string }>({
       query: ({ userId, ...updatedUser }) => ({
         url: `users/clerk/${userId}`,
@@ -77,11 +90,7 @@ export const api = createApi({
       invalidatesTags: ["Users"],
     }),
 
-    /* 
-    ===============
-    COURSES
-    =============== 
-    */
+    // COURSES
     getCourses: build.query<Course[], { category?: string }>({
       query: ({ category }) => ({
         url: "courses",
@@ -95,10 +104,7 @@ export const api = createApi({
       providesTags: (result, error, id) => [{ type: "Courses", id }],
     }),
 
-    createCourse: build.mutation<
-      Course,
-      { teacherId: string; teacherName: string }
-    >({
+    createCourse: build.mutation<Course, { teacherId: string; teacherName: string }>({
       query: (body) => ({
         url: `courses`,
         method: "POST",
@@ -107,10 +113,7 @@ export const api = createApi({
       invalidatesTags: ["Courses"],
     }),
 
-    updateCourse: build.mutation<
-      Course,
-      { courseId: string; formData: FormData }
-    >({
+    updateCourse: build.mutation<Course, { courseId: string; formData: FormData }>({
       query: ({ courseId, formData }) => ({
         url: `courses/${courseId}`,
         method: "PUT",
@@ -131,13 +134,7 @@ export const api = createApi({
 
     getUploadVideoUrl: build.mutation<
       { uploadUrl: string; videoUrl: string },
-      {
-        courseId: string;
-        chapterId: string;
-        sectionId: string;
-        fileName: string;
-        fileType: string;
-      }
+      { courseId: string; chapterId: string; sectionId: string; fileName: string; fileType: string }
     >({
       query: ({ courseId, sectionId, chapterId, fileName, fileType }) => ({
         url: `courses/${courseId}/sections/${sectionId}/chapters/${chapterId}/get-upload-url`,
@@ -146,24 +143,19 @@ export const api = createApi({
       }),
     }),
 
-    /* 
-    ===============
-    TRANSACTIONS
-    =============== 
-    */
+    // TRANSACTIONS
     getTransactions: build.query<Transaction[], string>({
       query: (userId) => `transactions?userId=${userId}`,
     }),
-    createStripePaymentIntent: build.mutation<
-      { clientSecret: string },
-      { amount: number }
-    >({
+
+    createStripePaymentIntent: build.mutation<{ clientSecret: string }, { amount: number }>({
       query: ({ amount }) => ({
         url: `/transactions/stripe/payment-intent`,
         method: "POST",
         body: { amount },
       }),
     }),
+
     createTransaction: build.mutation<Transaction, Partial<Transaction>>({
       query: (transaction) => ({
         url: "transactions",
@@ -172,20 +164,13 @@ export const api = createApi({
       }),
     }),
 
-    /* 
-    ===============
-    USER COURSE PROGRESS
-    =============== 
-    */
+    // USER COURSE PROGRESS
     getUserEnrolledCourses: build.query<Course[], string>({
       query: (userId) => `users/course-progress/${userId}/enrolled-courses`,
       providesTags: ["Courses", "UserCourseProgress"],
     }),
 
-    getUserCourseProgress: build.query<
-      UserCourseProgress,
-      { userId: string; courseId: string }
-    >({
+    getUserCourseProgress: build.query<UserCourseProgress, { userId: string; courseId: string }>({
       query: ({ userId, courseId }) =>
         `users/course-progress/${userId}/courses/${courseId}`,
       providesTags: ["UserCourseProgress"],
@@ -193,13 +178,7 @@ export const api = createApi({
 
     updateUserCourseProgress: build.mutation<
       UserCourseProgress,
-      {
-        userId: string;
-        courseId: string;
-        progressData: {
-          sections: SectionProgress[];
-        };
-      }
+      { userId: string; courseId: string; progressData: { sections: SectionProgress[] } }
     >({
       query: ({ userId, courseId, progressData }) => ({
         url: `users/course-progress/${userId}/courses/${courseId}`,
@@ -216,10 +195,7 @@ export const api = createApi({
             "getUserCourseProgress",
             { userId, courseId },
             (draft) => {
-              Object.assign(draft, {
-                ...draft,
-                sections: progressData.sections,
-              });
+              Object.assign(draft, { ...draft, sections: progressData.sections });
             }
           )
         );
@@ -233,6 +209,7 @@ export const api = createApi({
   }),
 });
 
+// Export hooks
 export const {
   useUpdateUserMutation,
   useCreateCourseMutation,
