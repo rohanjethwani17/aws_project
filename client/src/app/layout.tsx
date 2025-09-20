@@ -24,8 +24,8 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body className={`${dmSans.className}`}>
+      <html lang="en" className="dark" suppressHydrationWarning>
+        <body className={`${dmSans.variable} font-sans bg-background text-foreground min-h-screen`}>
           <Providers>
             <Suspense fallback={null}>
               <div className="root-layout">{children}</div>
