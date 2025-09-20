@@ -5,7 +5,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import ReactPlayer from "react-player";
 import Loading from "@/components/Loading";
 import { useCourseProgressData } from "@/hooks/useCourseProgressData";
-import type { ComponentRef } from "react";
 
 // ✅ Define the correct progress props type (react-player doesn’t export this)
 type ReactPlayerProgress = {

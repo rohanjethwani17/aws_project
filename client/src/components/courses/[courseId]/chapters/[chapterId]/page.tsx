@@ -1,10 +1,24 @@
 "use client";
-
-import { useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import ReactPlayer from "react-player";
+
+type ReactPlayerProgress = {
+  played: number;
+  playedSeconds: number;
+  loaded: number;
+  loadedSeconds: number;
+};
+
+const RP = ReactPlayer as unknown as React.ComponentType<{
+  url: string;
+  controls?: boolean;
+  width?: string | number;
+  height?: string | number;
+  onProgress?: (state: ReactPlayerProgress) => void;
+  config?: unknown;
+}>;
 import Loading from "@/components/Loading";
 import { useCourseProgressData } from "@/hooks/useCourseProgressData";
 
@@ -23,9 +37,8 @@ const Course = () => {
   } = useCourseProgressData();
   console.log("currentChapter.video:", currentChapter);
 
-  const playerRef = useRef<ReactPlayer>(null);
 
-  const handleProgress = ({ played }: { played: number }) => {
+  const handleProgress = ({ played }: ReactPlayerProgress) => {
     if (
       played >= 0.8 &&
       !hasMarkedComplete &&
@@ -76,8 +89,7 @@ const Course = () => {
         <Card className="course__video">
           <CardContent className="course__video-container">
             {currentChapter?.video ? (
-              <ReactPlayer
-                ref={playerRef}
+              <RP
                 url={currentChapter.video as string}
                 controls
                 width="100%"

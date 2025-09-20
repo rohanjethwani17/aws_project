@@ -66,7 +66,6 @@ const ChaptersSidebar = () => {
             (s) => s.sectionId === section.sectionId
           )}
           chapterId={chapterId as string}
-          courseId={courseId as string}
           expandedSections={expandedSections}
           toggleSection={toggleSection}
           handleChapterClick={handleChapterClick}
@@ -82,7 +81,6 @@ const Section = ({
   index,
   sectionProgress,
   chapterId,
-  courseId,
   expandedSections,
   toggleSection,
   handleChapterClick,
@@ -92,7 +90,6 @@ const Section = ({
   index: number;
   sectionProgress: SectionProgress | undefined;
   chapterId: string;
-  courseId: string;
   expandedSections: string[];
   toggleSection: (sectionTitle: string) => void;
   handleChapterClick: (sectionId: string, chapterId: string) => void;
@@ -142,7 +139,6 @@ const Section = ({
             section={section}
             sectionProgress={sectionProgress}
             chapterId={chapterId}
-            courseId={courseId}
             handleChapterClick={handleChapterClick}
             updateChapterProgress={updateChapterProgress}
           />
@@ -198,14 +194,12 @@ const ChaptersList = ({
   section,
   sectionProgress,
   chapterId,
-  courseId,
   handleChapterClick,
   updateChapterProgress,
 }: {
   section: Section;
   sectionProgress: SectionProgress | undefined;
   chapterId: string;
-  courseId: string;
   handleChapterClick: (sectionId: string, chapterId: string) => void;
   updateChapterProgress: (
     sectionId: string,
@@ -223,7 +217,6 @@ const ChaptersList = ({
           sectionId={section.sectionId}
           sectionProgress={sectionProgress}
           chapterId={chapterId}
-          courseId={courseId}
           handleChapterClick={handleChapterClick}
           updateChapterProgress={updateChapterProgress}
         />
@@ -238,7 +231,6 @@ const Chapter = ({
   sectionId,
   sectionProgress,
   chapterId,
-  courseId,
   handleChapterClick,
   updateChapterProgress,
 }: {
@@ -247,7 +239,6 @@ const Chapter = ({
   sectionId: string;
   sectionProgress: SectionProgress | undefined;
   chapterId: string;
-  courseId: string;
   handleChapterClick: (sectionId: string, chapterId: string) => void;
   updateChapterProgress: (
     sectionId: string,

@@ -54,7 +54,8 @@ const PaymentPageContent = () => {
         amount: course?.price || 0,
       };
 
-      await createTransaction(transactionData), navigateToStep(3);
+      await createTransaction(transactionData);
+      navigateToStep(3);
     }
   };
 

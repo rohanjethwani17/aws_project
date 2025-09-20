@@ -7,7 +7,6 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdateUserMutation } from "@/state/api";
 import { useUser } from "@clerk/nextjs";
-import React from "react";
 import { useForm } from "react-hook-form";
 import Header from "./Header";
 import { Form } from "@/components/ui/form";
@@ -39,14 +38,13 @@ const SharedNotificationSettings = ({
 
     const updatedUser = {
       userId: user.id,
-      publicMetadata: {
-        ...user.publicMetadata,
+      privateMetadata: {
         settings: {
           ...currentSettings,
           ...data,
         },
       },
-    };
+    } as Partial<User> & { userId: string };
 
     try {
       await updateUser(updatedUser);
