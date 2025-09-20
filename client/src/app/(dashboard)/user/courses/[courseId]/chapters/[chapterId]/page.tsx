@@ -1,6 +1,4 @@
 "use client";
-
-import { useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -33,7 +31,14 @@ const Course = () => {
 
   console.log("currentChapter.video:", currentChapter);
 
-  const playerRef = useRef<ComponentRef<typeof ReactPlayer>>(null);
+  // Use a typed facade for ReactPlayer to satisfy TS without using any
+  const RP = ReactPlayer as unknown as React.ComponentType<{
+    url: string;
+    controls?: boolean;
+    width?: string | number;
+    height?: string | number;
+    onProgress?: (state: ReactPlayerProgress) => void;
+  }>;
 
   // ✅ Strongly typed onProgress handler
   const handleProgress = ({ played }: ReactPlayerProgress) => {
@@ -89,20 +94,12 @@ const Course = () => {
         <Card className="course__video">
           <CardContent className="course__video-container">
             {currentChapter?.video ? (
-              <ReactPlayer
-                ref={playerRef}
+              <RP
                 url={currentChapter.video as string}
                 controls
                 width="100%"
                 height="100%"
-                onProgress={handleProgress as any}
-                config={{
-                  file: {
-                    attributes: {
-                      controlsList: "nodownload",
-                    },
-                  },
-                } as any} // ✅ Cast config to any to avoid TS error
+                onProgress={handleProgress}
               />
             ) : (
               <div className="course__no-video">

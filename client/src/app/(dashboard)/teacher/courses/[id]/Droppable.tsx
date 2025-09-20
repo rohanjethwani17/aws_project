@@ -149,7 +149,7 @@ const SectionHeader = ({
 }: {
   section: Section;
   sectionIndex: number;
-  dragHandleProps: any;
+  dragHandleProps: DraggableProvided["dragHandleProps"];
 }) => {
   const dispatch = useAppDispatch();
 
