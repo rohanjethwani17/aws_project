@@ -36,15 +36,21 @@ const SharedNotificationSettings = ({
   const onSubmit = async (data: NotificationSettingsFormData) => {
     if (!user) return;
 
-    const updatedUser = {
+    const updatedUser: Partial<User> & { userId: string } = {
       userId: user.id,
+      // Preserve required discriminator in public metadata for typing
+      publicMetadata: {
+        userType: (user.publicMetadata as { userType: "teacher" | "student" })
+          .userType,
+      },
+      // Store settings in private metadata
       privateMetadata: {
         settings: {
           ...currentSettings,
           ...data,
         },
       },
-    } as Partial<User> & { userId: string };
+    };
 
     try {
       await updateUser(updatedUser);
