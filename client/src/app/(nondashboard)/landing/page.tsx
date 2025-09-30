@@ -49,17 +49,20 @@ const Landing = () => {
   const { data: courses, isLoading } = useGetCoursesQuery({});
 
   // Mock courses data to display when API is unavailable
-  const mockCourses = [
+  const mockCourses: Course[] = [
     {
       courseId: "1",
       title: "Web Development Fundamentals",
       description: "Learn the basics of HTML, CSS, and JavaScript to build modern websites",
       category: "Web Development",
       image: "/hero1.jpg",
-      price: 99.99,
-      enrollmentCount: 234,
+      price: 9999, // Price in cents
       teacherId: "teacher1",
-      teacherName: "John Smith"
+      teacherName: "John Smith",
+      level: "Beginner",
+      status: "Published",
+      sections: [],
+      enrollments: new Array(234).fill({ userId: "user" })
     },
     {
       courseId: "2", 
@@ -67,10 +70,13 @@ const Landing = () => {
       description: "Deep dive into ML algorithms and neural networks with practical projects",
       category: "Data Science",
       image: "/hero2.jpg", 
-      price: 149.99,
-      enrollmentCount: 156,
+      price: 14999,
       teacherId: "teacher2",
-      teacherName: "Sarah Johnson"
+      teacherName: "Sarah Johnson",
+      level: "Advanced",
+      status: "Published", 
+      sections: [],
+      enrollments: new Array(156).fill({ userId: "user" })
     },
     {
       courseId: "3",
@@ -78,10 +84,13 @@ const Landing = () => {
       description: "Build cross-platform mobile apps using React Native and Expo",
       category: "Mobile Development",
       image: "/hero3.jpg",
-      price: 129.99, 
-      enrollmentCount: 89,
+      price: 12999,
       teacherId: "teacher3",
-      teacherName: "Mike Chen"
+      teacherName: "Mike Chen",
+      level: "Intermediate",
+      status: "Published",
+      sections: [],
+      enrollments: new Array(89).fill({ userId: "user" })
     },
     {
       courseId: "4",
@@ -89,10 +98,13 @@ const Landing = () => {
       description: "Start your coding journey with fundamental programming concepts",
       category: "Programming", 
       image: "/hero1.jpg",
-      price: 79.99,
-      enrollmentCount: 412,
+      price: 7999,
       teacherId: "teacher4", 
-      teacherName: "Lisa Anderson"
+      teacherName: "Lisa Anderson",
+      level: "Beginner",
+      status: "Published",
+      sections: [],
+      enrollments: new Array(412).fill({ userId: "user" })
     }
   ];
 
