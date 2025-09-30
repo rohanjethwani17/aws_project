@@ -178,8 +178,8 @@ const Landing = () => {
         </div>
 
         <div className="landing__courses">
-          {courses &&
-            courses.slice(0, 4).map((course, index) => (
+          {displayCourses &&
+            displayCourses.slice(0, 4).map((course, index) => (
               <motion.div
                 key={course.courseId}
                 initial={{ y: 50, opacity: 0 }}
