@@ -48,6 +48,57 @@ const Landing = () => {
   const currentImage = useCarousel({ totalImages: 3 });
   const { data: courses, isLoading } = useGetCoursesQuery({});
 
+  // Mock courses data to display when API is unavailable
+  const mockCourses = [
+    {
+      courseId: "1",
+      title: "Web Development Fundamentals",
+      description: "Learn the basics of HTML, CSS, and JavaScript to build modern websites",
+      category: "Web Development",
+      image: "/hero1.jpg",
+      price: 99.99,
+      enrollmentCount: 234,
+      teacherId: "teacher1",
+      teacherName: "John Smith"
+    },
+    {
+      courseId: "2", 
+      title: "Advanced Machine Learning",
+      description: "Deep dive into ML algorithms and neural networks with practical projects",
+      category: "Data Science",
+      image: "/hero2.jpg", 
+      price: 149.99,
+      enrollmentCount: 156,
+      teacherId: "teacher2",
+      teacherName: "Sarah Johnson"
+    },
+    {
+      courseId: "3",
+      title: "Mobile App Development with React Native", 
+      description: "Build cross-platform mobile apps using React Native and Expo",
+      category: "Mobile Development",
+      image: "/hero3.jpg",
+      price: 129.99, 
+      enrollmentCount: 89,
+      teacherId: "teacher3",
+      teacherName: "Mike Chen"
+    },
+    {
+      courseId: "4",
+      title: "Introduction to Programming",
+      description: "Start your coding journey with fundamental programming concepts",
+      category: "Programming", 
+      image: "/hero1.jpg",
+      price: 79.99,
+      enrollmentCount: 412,
+      teacherId: "teacher4", 
+      teacherName: "Lisa Anderson"
+    }
+  ];
+
+  // Use mock courses if real courses aren't available
+  const displayCourses = courses && courses.length > 0 ? courses : mockCourses;
+
   const handleCourseClick = (courseId: string) => {
     router.push(`/search?id=${courseId}`, {
       scroll: false,
