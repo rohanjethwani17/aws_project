@@ -145,7 +145,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), "prettier-plugin-tailwindcss"],
-} satisfies Config;
+  plugins: [require("tailwindcss-animate")],
+};
 
 export default config;
