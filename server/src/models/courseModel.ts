@@ -44,6 +44,13 @@ const chapterSchema = new Schema({
   video: {
     type: String,
   },
+  aiGenerated: {
+    type: Boolean,
+    default: false,
+  },
+  aiMetadata: {
+    type: Object,
+  },
 });
 
 const sectionSchema = new Schema({
