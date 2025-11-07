@@ -245,6 +245,99 @@ export const api = createApi({
         }
       },
     }),
+
+    /* 
+    ===============
+    AI CONTENT GENERATION
+    =============== 
+    */
+    generateCourseContent: build.mutation<
+      ContentGenerationJob,
+      { courseId: string; outline: CourseOutline; options?: GenerationOptions }
+    >({
+      query: ({ courseId, outline, options }) => ({
+        url: `ai/courses/${courseId}/generate-content`,
+        method: "POST",
+        body: { outline, options },
+      }),
+      invalidatesTags: ["Courses", "AIJobs"],
+    }),
+
+    getGenerationJobStatus: build.query<ContentGenerationJob, string>({
+      query: (jobId) => `ai/generation-jobs/${jobId}`,
+      providesTags: (result, error, jobId) => [{ type: "AIJobs", id: jobId }],
+    }),
+
+    regenerateChapter: build.mutation<
+      Chapter,
+      { courseId: string; sectionId: string; chapterId: string }
+    >({
+      query: ({ courseId, sectionId, chapterId }) => ({
+        url: `ai/courses/${courseId}/sections/${sectionId}/chapters/${chapterId}/regenerate`,
+        method: "POST",
+      }),
+      invalidatesTags: (result, error, { courseId }) => [
+        { type: "Courses", id: courseId },
+      ],
+    }),
+
+    cancelGenerationJob: build.mutation<{ message: string }, string>({
+      query: (jobId) => ({
+        url: `ai/generation-jobs/${jobId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, jobId) => [{ type: "AIJobs", id: jobId }],
+    }),
+
+    /* 
+    ===============
+    RECOMMENDATIONS
+    =============== 
+    */
+    getPersonalizedRecommendations: build.query<
+      CourseRecommendation[],
+      { limit?: number }
+    >({
+      query: ({ limit = 5 }) => ({
+        url: `recommendations/for-you`,
+        params: { limit },
+      }),
+      providesTags: ["Recommendations"],
+    }),
+
+    getSimilarCourses: build.query<
+      CourseRecommendation[],
+      { courseId: string; limit?: number }
+    >({
+      query: ({ courseId, limit = 5 }) => ({
+        url: `recommendations/similar/${courseId}`,
+        params: { limit },
+      }),
+    }),
+
+    recordRecommendationFeedback: build.mutation<
+      { message: string },
+      {
+        courseId: string;
+        feedback: "positive" | "negative";
+        recommendationScore?: number;
+        recommendationReasons?: RecommendationReason[];
+      }
+    >({
+      query: (body) => ({
+        url: `recommendations/feedback`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Recommendations"],
+    }),
+
+    getTrendingCourses: build.query<Course[], { limit?: number }>({
+      query: ({ limit = 10 }) => ({
+        url: `recommendations/trending`,
+        params: { limit },
+      }),
+    }),
   }),
 });
 
