@@ -57,6 +57,14 @@ declare global {
     enrollments?: Array<{
       userId: string;
     }>;
+    aiGenerated?: boolean;
+    generationJobId?: string;
+    aiMetadata?: {
+      generatedAt: string;
+      llmProvider: string;
+      apiCallsUsed: number;
+      modificationPercentage: number;
+    };
   }
 
   interface Transaction {
