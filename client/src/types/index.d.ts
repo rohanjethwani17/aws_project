@@ -227,6 +227,75 @@ declare global {
     coursePrice: string;
     courseStatus: boolean;
   }
+
+  // AI Content Generation Types
+  interface CourseOutline {
+    title: string;
+    description: string;
+    category: string;
+    level: "Beginner" | "Intermediate" | "Advanced";
+    sections: SectionOutline[];
+  }
+
+  interface SectionOutline {
+    sectionTitle: string;
+    sectionDescription?: string;
+    chapters: ChapterOutline[];
+  }
+
+  interface ChapterOutline {
+    title: string;
+    type: "Text" | "Quiz" | "Video";
+    learningObjectives?: string[];
+  }
+
+  interface GenerationOptions {
+    tone?: "professional" | "casual" | "academic";
+    detailLevel?: "concise" | "detailed" | "comprehensive";
+    includeExamples?: boolean;
+    targetAudience?: string;
+  }
+
+  interface ContentGenerationJob {
+    jobId: string;
+    courseId: string;
+    instructorId: string;
+    status: "pending" | "processing" | "completed" | "failed";
+    progress: number;
+    outline: CourseOutline;
+    options?: GenerationOptions;
+    currentSection?: number;
+    currentChapter?: number;
+    totalSections: number;
+    totalChapters: number;
+    startedAt: string;
+    completedAt?: string;
+    error?: string;
+    apiCallsUsed: number;
+    llmProvider: "gemini" | "huggingface" | "ollama";
+  }
+
+  // Recommendation Types
+  interface RecommendationReason {
+    type: "category_match" | "similar_users" | "trending" | "instructor_match";
+    description: string;
+    weight: number;
+  }
+
+  interface CourseRecommendation {
+    course: Course;
+    score: number;
+    reasons: RecommendationReason[];
+  }
+
+  interface RecommendationFeedback {
+    feedbackId: string;
+    userId: string;
+    courseId: string;
+    feedback: "positive" | "negative";
+    recommendationScore?: number;
+    recommendationReasons?: RecommendationReason[];
+  }
 }
 
 export {};
