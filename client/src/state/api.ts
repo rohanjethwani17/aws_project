@@ -76,7 +76,7 @@ const customBaseQuery = async (
 export const api = createApi({
   baseQuery: customBaseQuery,
   reducerPath: "api",
-  tagTypes: ["Courses", "Users", "UserCourseProgress"],
+  tagTypes: ["Courses", "Users", "UserCourseProgress", "Recommendations", "AIJobs"],
   endpoints: (build) => ({
     /* 
     ===============
