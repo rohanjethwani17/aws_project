@@ -17,6 +17,8 @@ import courseRoutes from "./routes/courseRoutes";
 import userClerkRoutes from "./routes/userClerkRoutes";
 import transactionRoutes from "./routes/transactionRoutes";
 import userCourseProgressRoutes from "./routes/userCourseProgressRoutes";
+import aiContentRoutes from "./routes/aiContentRoutes";
+import recommendationRoutes from "./routes/recommendationRoutes";
 
 /* CONFIGURATIONS */
 dotenv.config();
