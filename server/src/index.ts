@@ -50,6 +50,8 @@ app.use("/courses", courseRoutes);
 app.use("/users/clerk", requireAuth(), userClerkRoutes);
 app.use("/transactions", requireAuth(), transactionRoutes);
 app.use("/users/course-progress", requireAuth(), userCourseProgressRoutes);
+app.use("/ai", requireAuth(), aiContentRoutes);
+app.use("/recommendations", requireAuth(), recommendationRoutes);
 
 /* SERVER */
 const port = process.env.PORT || 3000;
