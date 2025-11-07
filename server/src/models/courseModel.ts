@@ -128,6 +128,16 @@ const courseSchema = new Schema(
         }),
       ],
     },
+    aiGenerated: {
+      type: Boolean,
+      default: false,
+    },
+    generationJobId: {
+      type: String,
+    },
+    aiMetadata: {
+      type: Object,
+    },
   },
   {
     timestamps: true,
