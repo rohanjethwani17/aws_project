@@ -355,4 +355,12 @@ export const {
   useGetUserEnrolledCoursesQuery,
   useGetUserCourseProgressQuery,
   useUpdateUserCourseProgressMutation,
+  useGenerateCourseContentMutation,
+  useGetGenerationJobStatusQuery,
+  useRegenerateChapterMutation,
+  useCancelGenerationJobMutation,
+  useGetPersonalizedRecommendationsQuery,
+  useGetSimilarCoursesQuery,
+  useRecordRecommendationFeedbackMutation,
+  useGetTrendingCoursesQuery,
 } = api;
