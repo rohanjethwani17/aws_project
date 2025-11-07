@@ -114,6 +114,12 @@ declare global {
     video?: string | File;
     freePreview?: boolean;
     type: "Text" | "Quiz" | "Video";
+    aiGenerated?: boolean;
+    aiMetadata?: {
+      generatedAt: string;
+      prompt: string;
+      modified: boolean;
+    };
   }
 
   interface ChapterProgress {
