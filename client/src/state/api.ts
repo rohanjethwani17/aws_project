@@ -15,7 +15,7 @@ const customBaseQuery = async (
   extraOptions: unknown
 ) => {
   const baseQuery = fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://34qhamyk4bzz5gk4frxxeafxsu0pascl.lambda-url.us-east-1.on.aws',
     prepareHeaders: async (headers) => {
       if (typeof window !== "undefined") {
         const token = await window.Clerk?.session?.getToken();
