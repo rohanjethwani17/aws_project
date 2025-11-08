@@ -2,15 +2,10 @@
 
 A full-stack, cloud-native Learning Management System (LMS) with AI-powered course content generation, built with modern technologies and deployed on AWS and Vercel.
 
-![Next.js](https://img.shields.io/badge/Next.js-15.5-black?style=flat-square&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript)
-![AWS](https://img.shields.io/badge/AWS-Lambda%20%7C%20DynamoDB%20%7C%20S3-orange?style=flat-square&logo=amazon-aws)
-![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?style=flat-square&logo=vercel)
+## 🌟 App is Live on Vercel
 
-## 🌟 Live Demo
+[https://learning-management-app-pi.vercel.app](https://learning-management-app-pi.vercel.app)
 
-- **Frontend**: [https://learning-management-app-pi.vercel.app](https://learning-management-app-pi.vercel.app)
-- **Backend API**: AWS Lambda Function URL (serverless)
 
 ## 📋 Table of Contents
 
