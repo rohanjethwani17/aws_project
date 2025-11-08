@@ -34,17 +34,38 @@ export const clerkClient = createClerkClient({
 const app = express();
 
 // CORS configuration - must be before other middleware
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://learning-management-app-pi.vercel.app',
+  /https:\/\/.*\.vercel\.app$/
+];
+
 app.use(cors({
-  origin: true, // Allow all origins for now
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is in allowed list or matches pattern
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') {
+        return allowed === origin;
+      }
+      return allowed.test(origin);
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Content-Length', 'X-JSON'],
   maxAge: 86400
 }));
-
-// Handle preflight requests
-app.options('*', cors());
 
 app.use(express.json());
 app.use(helmet({
