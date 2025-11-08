@@ -21,16 +21,11 @@ interface AIContentWizardProps {
   onClose: () => void;
 }
 
-interface ChapterOutline {
+// ChapterOutline type for internal state management
+type ChapterOutline = {
   title: string;
   type: "Text" | "Quiz" | "Video";
-}
-
-interface SectionOutline {
-  sectionTitle: string;
-  sectionDescription?: string;
-  chapters: ChapterOutline[];
-}
+};
 
 const AIContentWizard: React.FC<AIContentWizardProps> = ({
   courseId,
@@ -101,22 +96,30 @@ const AIContentWizard: React.FC<AIContentWizardProps> = ({
 
   const updateSection = (
     index: number,
-    field: string,
+    field: "sectionTitle" | "sectionDescription",
     value: string
   ) => {
     const newSections = [...outline.sections];
-    (newSections[index] as any)[field] = value;
+    if (field === "sectionTitle") {
+      newSections[index].sectionTitle = value;
+    } else if (field === "sectionDescription") {
+      newSections[index].sectionDescription = value;
+    }
     setOutline({ ...outline, sections: newSections });
   };
 
   const updateChapter = (
     sectionIndex: number,
     chapterIndex: number,
-    field: string,
+    field: "title" | "type",
     value: string
   ) => {
     const newSections = [...outline.sections];
-    (newSections[sectionIndex].chapters[chapterIndex] as any)[field] = value;
+    if (field === "title") {
+      newSections[sectionIndex].chapters[chapterIndex].title = value;
+    } else if (field === "type") {
+      newSections[sectionIndex].chapters[chapterIndex].type = value as "Text" | "Quiz" | "Video";
+    }
     setOutline({ ...outline, sections: newSections });
   };
 
@@ -160,11 +163,12 @@ const AIContentWizard: React.FC<AIContentWizardProps> = ({
 
       toast.success("Content generation started!");
       onGenerationStarted(result.jobId);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Generation error:", error);
-      toast.error(
-        error.data?.message || "Failed to start content generation"
-      );
+      const errorMessage = error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data 
+        ? String(error.data.message) 
+        : "Failed to start content generation";
+      toast.error(errorMessage);
     }
   };
 
@@ -220,7 +224,7 @@ const AIContentWizard: React.FC<AIContentWizardProps> = ({
             <Label htmlFor="level">Level *</Label>
             <Select
               value={outline.level}
-              onValueChange={(value: any) =>
+              onValueChange={(value: "Beginner" | "Intermediate" | "Advanced") =>
                 setOutline({ ...outline, level: value })
               }
             >
@@ -245,7 +249,7 @@ const AIContentWizard: React.FC<AIContentWizardProps> = ({
             <Label htmlFor="tone">Tone</Label>
             <Select
               value={options.tone}
-              onValueChange={(value: any) =>
+              onValueChange={(value: "professional" | "casual" | "academic") =>
                 setOptions({ ...options, tone: value })
               }
             >
@@ -264,7 +268,7 @@ const AIContentWizard: React.FC<AIContentWizardProps> = ({
             <Label htmlFor="detailLevel">Detail Level</Label>
             <Select
               value={options.detailLevel}
-              onValueChange={(value: any) =>
+              onValueChange={(value: "concise" | "detailed" | "comprehensive") =>
                 setOptions({ ...options, detailLevel: value })
               }
             >
@@ -364,7 +368,7 @@ const AIContentWizard: React.FC<AIContentWizardProps> = ({
 
                   <Select
                     value={chapter.type}
-                    onValueChange={(value: any) =>
+                    onValueChange={(value: "Text" | "Quiz" | "Video") =>
                       updateChapter(
                         sectionIndex,
                         chapterIndex,

@@ -6,14 +6,12 @@ import CourseCard from "@/components/CourseCard";
 import { ThumbsUp, ThumbsDown, TrendingUp, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useUser } from "@clerk/nextjs";
 
 interface RecommendedCoursesProps {
   limit?: number;
 }
 
 const RecommendedCourses: React.FC<RecommendedCoursesProps & { onCourseSelect?: (course: Course) => void }> = ({ limit = 5, onCourseSelect }) => {
-  const { user } = useUser();
   const { data: recommendations, isLoading, error } = useGetPersonalizedRecommendationsQuery(
     { limit }
   );
@@ -23,7 +21,7 @@ const RecommendedCourses: React.FC<RecommendedCoursesProps & { onCourseSelect?: 
     courseId: string,
     feedback: "positive" | "negative",
     score: number,
-    reasons: any[]
+    reasons: RecommendationReason[]
   ) => {
     try {
       await recordFeedback({

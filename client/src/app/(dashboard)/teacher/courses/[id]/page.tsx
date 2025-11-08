@@ -26,6 +26,12 @@ import DroppableComponent from "./Droppable";
 import ChapterModal from "./ChapterModal";
 import SectionModal from "./SectionModal";
 import AIContentWizard from "@/components/ai/AIContentWizard";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const CourseEditor = () => {
   const router = useRouter();
@@ -225,17 +231,27 @@ const CourseEditor = () => {
       <SectionModal />
       
       {/* AI Content Generation Wizard */}
-      {showAIWizard && course && (
-        <AIContentWizard
-          courseId={id}
-          isOpen={showAIWizard}
-          onClose={() => setShowAIWizard(false)}
-          onSuccess={() => {
-            setShowAIWizard(false);
-            refetch();
-          }}
-        />
-      )}
+      <Dialog open={showAIWizard} onOpenChange={setShowAIWizard}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              AI Content Generation Wizard
+            </DialogTitle>
+          </DialogHeader>
+          {course && (
+            <AIContentWizard
+              courseId={id}
+              onClose={() => setShowAIWizard(false)}
+              onGenerationStarted={(jobId: string) => {
+                console.log("Generation started with job ID:", jobId);
+                setShowAIWizard(false);
+                refetch();
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

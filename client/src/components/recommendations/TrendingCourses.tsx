@@ -56,12 +56,12 @@ const TrendingCourses: React.FC<TrendingCoursesProps & { onCourseSelect?: (cours
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {trendingCourses.map((course: any) => (
+        {trendingCourses.map((course: Course) => (
           <div key={course.courseId} className="relative group">
             {/* Enrollment Count Badge */}
             <div className="absolute top-4 right-4 z-10 bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
               <Users className="w-3 h-3" />
-              {course.enrollmentCount || 0}
+              {course.enrollments?.length || 0}
             </div>
 
             <CourseCard
