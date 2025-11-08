@@ -22,8 +22,8 @@ const TrendingCourses: React.FC<TrendingCoursesProps & { onCourseSelect?: (cours
     }
   };
 
+  // Don't show anything if there's an error (backend not available)
   if (error) {
-    console.error("Trending courses error:", error);
     return null;
   }
 

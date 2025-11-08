@@ -35,10 +35,16 @@ const customBaseQuery = async (
     );
 
     if (result.error) {
-      const errorData = (result.error.data ?? {}) as { message?: string };
-      const errorMessage =
-        errorData.message ?? String(result.error.status ?? "An error occurred");
-      toast.error(`Error: ${errorMessage}`);
+      // Don't show error toasts for recommendation endpoints (they're optional features)
+      const url = typeof args === 'string' ? args : args.url;
+      const isRecommendationEndpoint = url.includes('/recommendations/');
+      
+      if (!isRecommendationEndpoint) {
+        const errorData = (result.error.data ?? {}) as { message?: string };
+        const errorMessage =
+          errorData.message ?? String(result.error.status ?? "An error occurred");
+        toast.error(`Error: ${errorMessage}`);
+      }
     }
 
     const isMutationRequest =

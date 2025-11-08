@@ -66,12 +66,8 @@ const RecommendedCourses: React.FC<RecommendedCoursesProps & { onCourseSelect?: 
     );
   }
 
-  if (error) {
-    console.error("Recommendation error:", error);
-    return null;
-  }
-
-  if (!recommendations || recommendations.length === 0) {
+  // Don't show anything if there's an error or no data (backend not available)
+  if (error || !recommendations || recommendations.length === 0) {
     return null;
   }
 
