@@ -274,8 +274,12 @@ export class RecommendationService {
 
       // Check feedback for similar courses
       const course = await Course.get(courseId);
+      
+      // Fetch all courses only when needed
+      const allCoursesForFeedback = await Course.scan().exec();
+      
       const similarCourseFeedback = feedback.filter((f: any) => {
-        const feedbackCourse = allCourses.find(
+        const feedbackCourse = allCoursesForFeedback.find(
           (c: any) => c.courseId === f.courseId
         );
         return (
@@ -421,9 +425,3 @@ export class RecommendationService {
     recommendationCache.delete(userId);
   }
 }
-
-// Store reference to allCourses for feedback adjustment
-let allCourses: any[] = [];
-Course.scan().exec().then((courses) => {
-  allCourses = courses;
-});
