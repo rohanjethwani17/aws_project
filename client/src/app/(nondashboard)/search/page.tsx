@@ -7,6 +7,8 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import CourseCardSearch from "@/components/CourseCardSearch";
 import SelectedCourse from "./SelectedCourse";
+import RecommendedCourses from "@/components/recommendations/RecommendedCourses";
+import TrendingCourses from "@/components/recommendations/TrendingCourses";
 
 const Search = () => {
   const searchParams = useSearchParams();
@@ -49,8 +51,20 @@ const Search = () => {
       transition={{ duration: 0.5 }}
       className="search"
     >
-      <h1 className="search__title">List of available courses</h1>
-      <h2 className="search__subtitle">{courses.length} courses avaiable</h2>
+      <h1 className="search__title">Discover Courses</h1>
+      <h2 className="search__subtitle">{courses.length} courses available</h2>
+
+      {/* AI-Powered Recommendations Section */}
+      <div className="mb-8">
+        <RecommendedCourses onCourseSelect={handleCourseSelect} />
+      </div>
+
+      {/* Trending Courses Section */}
+      <div className="mb-8">
+        <TrendingCourses onCourseSelect={handleCourseSelect} />
+      </div>
+
+      <h2 className="text-2xl font-bold mb-4">All Courses</h2>
       <div className="search__content">
         <motion.div
           initial={{ y: 40, opacity: 0 }}

@@ -12,11 +12,10 @@ interface RecommendedCoursesProps {
   limit?: number;
 }
 
-const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({ limit = 5 }) => {
+const RecommendedCourses: React.FC<RecommendedCoursesProps & { onCourseSelect?: (course: Course) => void }> = ({ limit = 5, onCourseSelect }) => {
   const { user } = useUser();
   const { data: recommendations, isLoading, error } = useGetPersonalizedRecommendationsQuery(
-    { limit },
-    { skip: !user }
+    { limit }
   );
   const [recordFeedback] = useRecordRecommendationFeedbackMutation();
 
@@ -42,19 +41,20 @@ const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({ limit = 5 }) =>
   };
 
   const onGoToCourse = (course: Course) => {
-    window.location.href = `/search?id=${course.courseId}`;
+    if (onCourseSelect) {
+      onCourseSelect(course);
+    } else {
+      window.location.href = `/search?id=${course.courseId}`;
+    }
   };
-
-  if (!user) {
-    return null;
-  }
 
   if (isLoading) {
     return (
       <div className="py-8">
         <div className="flex items-center gap-2 mb-6">
           <Sparkles className="w-6 h-6 text-purple-500" />
-          <h2 className="text-2xl font-bold">Recommended For You</h2>
+          <h2 className="text-2xl font-bold">AI-Powered Recommendations</h2>
+          <span className="text-sm bg-purple-100 text-purple-700 px-2 py-1 rounded-full">Beta</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
@@ -68,7 +68,12 @@ const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({ limit = 5 }) =>
     );
   }
 
-  if (error || !recommendations || recommendations.length === 0) {
+  if (error) {
+    console.error("Recommendation error:", error);
+    return null;
+  }
+
+  if (!recommendations || recommendations.length === 0) {
     return null;
   }
 
@@ -76,7 +81,8 @@ const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({ limit = 5 }) =>
     <div className="py-8">
       <div className="flex items-center gap-2 mb-6">
         <Sparkles className="w-6 h-6 text-purple-500" />
-        <h2 className="text-2xl font-bold">Recommended For You</h2>
+        <h2 className="text-2xl font-bold">AI-Powered Recommendations</h2>
+        <span className="text-sm bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-semibold">AI</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -9,14 +9,23 @@ interface TrendingCoursesProps {
   limit?: number;
 }
 
-const TrendingCourses: React.FC<TrendingCoursesProps> = ({ limit = 6 }) => {
-  const { data: trendingCourses, isLoading } = useGetTrendingCoursesQuery({
+const TrendingCourses: React.FC<TrendingCoursesProps & { onCourseSelect?: (course: Course) => void }> = ({ limit = 6, onCourseSelect }) => {
+  const { data: trendingCourses, isLoading, error } = useGetTrendingCoursesQuery({
     limit,
   });
 
   const onGoToCourse = (course: Course) => {
-    window.location.href = `/search?id=${course.courseId}`;
+    if (onCourseSelect) {
+      onCourseSelect(course);
+    } else {
+      window.location.href = `/search?id=${course.courseId}`;
+    }
   };
+
+  if (error) {
+    console.error("Trending courses error:", error);
+    return null;
+  }
 
   if (isLoading) {
     return (
@@ -43,6 +52,7 @@ const TrendingCourses: React.FC<TrendingCoursesProps> = ({ limit = 6 }) => {
       <div className="flex items-center gap-2 mb-6">
         <TrendingUp className="w-6 h-6 text-orange-500" />
         <h2 className="text-2xl font-bold">Trending Courses</h2>
+        <span className="text-sm bg-orange-100 text-orange-700 px-2 py-1 rounded-full font-semibold">Popular</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

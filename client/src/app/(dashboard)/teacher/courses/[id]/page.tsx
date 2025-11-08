@@ -18,13 +18,14 @@ import {
 } from "@/state/api";
 import { useAppDispatch, useAppSelector } from "@/state/redux";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, Sparkles } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import DroppableComponent from "./Droppable";
 import ChapterModal from "./ChapterModal";
 import SectionModal from "./SectionModal";
+import AIContentWizard from "@/components/ai/AIContentWizard";
 
 const CourseEditor = () => {
   const router = useRouter();
@@ -33,6 +34,7 @@ const CourseEditor = () => {
   const { data: course, isLoading, refetch } = useGetCourseQuery(id);
   const [updateCourse] = useUpdateCourseMutation();
   const [getUploadVideoUrl] = useGetUploadVideoUrlMutation();
+  const [showAIWizard, setShowAIWizard] = useState(false);
 
   const dispatch = useAppDispatch();
   const { sections } = useAppSelector((state) => state.global.courseEditor);
@@ -178,20 +180,33 @@ const CourseEditor = () => {
                   Sections
                 </h2>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    dispatch(openSectionModal({ sectionIndex: null }))
-                  }
-                  className="border-none text-primary-700 group"
-                >
-                  <Plus className="mr-1 h-4 w-4 text-primary-700 group-hover:white-100" />
-                  <span className="text-primary-700 group-hover:white-100">
-                    Add Section
-                  </span>
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAIWizard(true)}
+                    className="border-none bg-purple-600 hover:bg-purple-700 text-white group"
+                  >
+                    <Sparkles className="mr-1 h-4 w-4" />
+                    <span>Generate with AI</span>
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      dispatch(openSectionModal({ sectionIndex: null }))
+                    }
+                    className="border-none text-primary-700 group"
+                  >
+                    <Plus className="mr-1 h-4 w-4 text-primary-700 group-hover:white-100" />
+                    <span className="text-primary-700 group-hover:white-100">
+                      Add Section
+                    </span>
+                  </Button>
+                </div>
               </div>
 
               {isLoading ? (
@@ -208,6 +223,19 @@ const CourseEditor = () => {
 
       <ChapterModal />
       <SectionModal />
+      
+      {/* AI Content Generation Wizard */}
+      {showAIWizard && course && (
+        <AIContentWizard
+          courseId={id}
+          isOpen={showAIWizard}
+          onClose={() => setShowAIWizard(false)}
+          onSuccess={() => {
+            setShowAIWizard(false);
+            refetch();
+          }}
+        />
+      )}
     </div>
   );
 };

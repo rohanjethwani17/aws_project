@@ -55,7 +55,7 @@ app.use("/users/clerk", requireAuth(), userClerkRoutes);
 app.use("/transactions", requireAuth(), transactionRoutes);
 app.use("/users/course-progress", requireAuth(), userCourseProgressRoutes);
 app.use("/ai", requireAuth(), aiContentRoutes);
-app.use("/recommendations", requireAuth(), recommendationRoutes);
+app.use("/recommendations", recommendationRoutes); // Remove auth for demo purposes
 
 /* SERVER */
 const port = process.env.PORT || 3000;

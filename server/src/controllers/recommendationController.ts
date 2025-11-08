@@ -9,12 +9,13 @@ export const getPersonalizedRecommendations = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { userId } = getAuth(req);
+  const auth = getAuth(req);
+  const userId = auth?.userId || "demo-user"; // Use demo user if not authenticated
   const limit = parseInt(req.query.limit as string) || 5;
 
   try {
     const recommendations = await recommendationService.getRecommendations(
-      userId!,
+      userId,
       limit
     );
 
@@ -23,6 +24,7 @@ export const getPersonalizedRecommendations = async (
       data: recommendations,
     });
   } catch (error: any) {
+    console.error("Recommendation error:", error);
     res.status(500).json({
       message: "Error retrieving recommendations",
       error: error.message,
@@ -61,7 +63,8 @@ export const recordRecommendationFeedback = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { userId } = getAuth(req);
+  const auth = getAuth(req);
+  const userId = auth?.userId || "demo-user";
   const { courseId, feedback, recommendationScore, recommendationReasons } = req.body;
 
   try {
@@ -80,7 +83,7 @@ export const recordRecommendationFeedback = async (
     }
 
     await recommendationService.recordFeedback(
-      userId!,
+      userId,
       courseId,
       feedback,
       recommendationScore,
